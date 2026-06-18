@@ -37,3 +37,36 @@ def test_missing_indicator_excluded():
     out = weather.score({"vix": {"metric": 12.0}}, DEFAULT_WEATHER_SETTINGS)
     assert out["level"] == 1
     assert out["states"]["credit"] is None
+
+
+def test_hidden_hedging_bumps_level():
+    # VIX calm (green), but SKEW red + VVIX yellow -> +1 over the calm base
+    metrics = {"vix": 14.0, "skew": 150.0, "vvix": 100.0}
+    out = weather.score(s(metrics), DEFAULT_WEATHER_SETTINGS)
+    assert "hidden_hedging" in out["fired_rules"]
+    base_only = weather.score(
+        s({"vix": 14.0}), DEFAULT_WEATHER_SETTINGS  # control without hedging combo
+    )
+    assert out["level"] > base_only["level"]
+
+
+def test_hidden_hedging_does_not_fire_when_vix_high():
+    metrics = {"vix": 35.0, "skew": 150.0, "vvix": 100.0}
+    out = weather.score(s(metrics), DEFAULT_WEATHER_SETTINGS)
+    assert "hidden_hedging" not in out["fired_rules"]
+
+
+def test_cascade_floor_sets_min_level_4():
+    metrics = {"vix": 12.0}  # otherwise calm
+    out = weather.score(s(metrics, stocks_down=True, bonds_down=True, gold_down=True),
+                        DEFAULT_WEATHER_SETTINGS)
+    assert out["level"] >= 4
+    assert "cascade_floor" in out["fired_rules"]
+
+
+def test_rules_can_be_disabled():
+    settings = {**DEFAULT_WEATHER_SETTINGS,
+                "rules": {"hidden_hedging": False, "credit_liquidity": False, "cascade_floor": False}}
+    metrics = {"vix": 14.0, "skew": 150.0, "vvix": 100.0}
+    out = weather.score(s(metrics), settings)
+    assert out["fired_rules"] == []
