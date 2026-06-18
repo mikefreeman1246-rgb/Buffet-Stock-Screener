@@ -83,3 +83,19 @@ class PullStatus(Base):
     error_message: Mapped[str | None] = mapped_column(Text)
     started_at: Mapped[datetime | None] = mapped_column(DateTime)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+
+class MarketSnapshot(Base):
+    __tablename__ = "market_snapshot"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    pulled_at: Mapped[datetime | None] = mapped_column(DateTime)
+    payload: Mapped[str | None] = mapped_column(Text)   # JSON: indicators + score
+
+
+class MarketSettings(Base):
+    __tablename__ = "market_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime, default=datetime.utcnow)
+    payload: Mapped[str | None] = mapped_column(Text)   # JSON: thresholds + rules

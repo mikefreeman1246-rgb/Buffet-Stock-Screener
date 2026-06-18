@@ -1,7 +1,7 @@
 import axios from "axios";
 import type {
-  Assumptions, MetaStats, PipelineStatus, ScreenerFilterState,
-  ScreenerResponse, StockDetail, StockOverride, TagCount,
+  Assumptions, DashboardResponse, MetaStats, PipelineStatus, ScreenerFilterState,
+  ScreenerResponse, StockDetail, StockOverride, TagCount, WeatherSettings,
 } from "./types";
 
 const http = axios.create({ baseURL: "/api" });
@@ -95,5 +95,31 @@ export const api = {
 
   async stopPipeline() {
     await http.post("/pipeline/stop");
+  },
+
+  // --- Market Weathercast ---------------------------------------------------
+  async marketDashboard(): Promise<DashboardResponse> {
+    const { data } = await http.get<DashboardResponse>("/market/dashboard");
+    return data;
+  },
+
+  async marketRefresh(): Promise<DashboardResponse> {
+    const { data } = await http.post<DashboardResponse>("/market/refresh");
+    return data;
+  },
+
+  async getWeatherSettings(): Promise<WeatherSettings> {
+    const { data } = await http.get<WeatherSettings>("/market/settings");
+    return data;
+  },
+
+  async updateWeatherSettings(body: WeatherSettings): Promise<WeatherSettings> {
+    const { data } = await http.put<WeatherSettings>("/market/settings", body);
+    return data;
+  },
+
+  async resetWeatherSettings(): Promise<WeatherSettings> {
+    const { data } = await http.post<WeatherSettings>("/market/settings/reset");
+    return data;
   },
 };

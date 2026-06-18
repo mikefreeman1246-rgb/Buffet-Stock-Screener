@@ -24,3 +24,6 @@ Thumbs.db
 .docker-export-version
 .docker-export-config
 data/*.log
+
+# TS build cache
+*.tsbuildinfo

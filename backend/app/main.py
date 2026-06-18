@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import CORS_ORIGINS
 from app.database import init_db
 from app.websocket import manager
-from app.routers import screener, stocks, assumptions, pipeline, meta, tags
+from app.routers import screener, stocks, assumptions, pipeline, meta, tags, market
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO)
@@ -28,6 +28,7 @@ app.include_router(assumptions.router)
 app.include_router(pipeline.router)
 app.include_router(meta.router)
 app.include_router(tags.router)
+app.include_router(market.router)
 
 
 @app.on_event("startup")

@@ -1,18 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-import { ConfigProvider, Layout, notification, theme } from "antd";
+import { ConfigProvider, Layout, Tabs, theme } from "antd";
 import AppHeader from "./components/Header";
-import ScreenerFilters from "./components/ScreenerFilters";
-import ScreenerTable from "./components/ScreenerTable";
-import AssumptionsDrawer from "./components/AssumptionsDrawer";
-import { useScreener } from "./hooks/useScreener";
-import { api } from "./lib/api";
-import type { PipelineDone } from "./hooks/usePipeline";
-import type { Assumptions, MetaStats, TagCount } from "./lib/types";
-
-const UNIVERSE_LABEL: Record<string, string> = {
-  sp500: "S&P 500",
-  sp1500: "S&P 1500",
-};
+import ScreenerView from "./components/ScreenerView";
+import Weathercast from "./components/market/Weathercast";
+import { ScreenerContext } from "./components/ScreenerContext";
+import { useScreenerController } from "./hooks/useScreenerController";
 
 const { Content } = Layout;
 
@@ -57,111 +48,36 @@ const darkTheme = {
 };
 
 export default function App() {
-  const { filters, data, loading, patch, reset, reload } = useScreener();
-  const [assumptions, setAssumptions] = useState<Assumptions | null>(null);
-  const [stats, setStats] = useState<MetaStats | null>(null);
-  const [allTags, setAllTags] = useState<TagCount[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const loadTags = useCallback(async () => {
-    setAllTags(await api.getTags());
-  }, []);
-
-  const loadMeta = useCallback(async () => {
-    const [a, s] = await Promise.all([api.getAssumptions(), api.stats()]);
-    setAssumptions(a);
-    setStats(s);
-  }, []);
-
-  useEffect(() => {
-    loadMeta();
-    loadTags();
-  }, [loadMeta, loadTags]);
-
-  const handleTagsChanged = useCallback(() => {
-    loadTags();
-    reload();
-  }, [loadTags, reload]);
-
-  const handleAssumptionsSaved = useCallback(
-    (a: Assumptions) => {
-      setAssumptions(a);
-      reload();
-    },
-    [reload]
-  );
-
-  const handlePullDone = useCallback(
-    (done: PipelineDone) => {
-      loadMeta();
-      reload();
-      const label = UNIVERSE_LABEL[done.universe] ?? done.universe;
-      const loaded = done.completed - done.failed;
-      if (done.status === "paused") {
-        notification.warning({
-          message: "Pull stopped",
-          description: `${loaded} ${label} stocks loaded before stopping.`,
-          placement: "bottomRight",
-        });
-      } else if (done.failed > 0) {
-        notification.warning({
-          message: `${label} loaded`,
-          description: `${loaded} of ${done.total} stocks scored · ${done.failed} skipped (missing/rate-limited data).`,
-          placement: "bottomRight",
-          duration: 6,
-        });
-      } else {
-        notification.success({
-          message: `${label} loaded`,
-          description: `${loaded} stocks scored with Graham + Buffett valuations.`,
-          placement: "bottomRight",
-          duration: 5,
-        });
-      }
-    },
-    [loadMeta, reload]
-  );
+  // One screener controller instance, shared by the layout header (via context)
+  // and the ScreenerView tab. Lives here because the header sits in Layout.Header,
+  // outside the tabbed <Content>.
+  const controller = useScreenerController();
 
   return (
     <ConfigProvider theme={darkTheme}>
-      <Layout style={{ minHeight: "100vh" }}>
-        <Layout.Header
-          style={{ display: "flex", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
-        >
-          <AppHeader
-            stats={stats}
-            assumptions={assumptions}
-            onOpenAssumptions={() => setDrawerOpen(true)}
-            onPullDone={handlePullDone}
-          />
-        </Layout.Header>
-        <Content style={{ padding: "16px 20px 28px" }}>
-          <ScreenerFilters
-            filters={filters}
-            sectors={stats?.sectors ?? []}
-            tags={allTags}
-            total={data?.total ?? 0}
-            rows={data?.results ?? []}
-            onChange={patch}
-            onReset={reset}
-          />
-          <ScreenerTable
-            data={data}
-            loading={loading}
-            filters={filters}
-            allTags={allTags.map((t) => t.tag)}
-            onChange={patch}
-            onOverrideSaved={reload}
-            onTagsChanged={handleTagsChanged}
-          />
-        </Content>
-        <AssumptionsDrawer
-          open={drawerOpen}
-          assumptions={assumptions}
-          onClose={() => setDrawerOpen(false)}
-          onSaved={handleAssumptionsSaved}
-        />
-      </Layout>
+      <ScreenerContext.Provider value={controller}>
+        <Layout style={{ minHeight: "100vh" }}>
+          <Layout.Header
+            style={{ display: "flex", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+          >
+            <AppHeader
+              stats={controller.stats}
+              assumptions={controller.assumptions}
+              onOpenAssumptions={() => controller.setDrawerOpen(true)}
+              onPullDone={controller.handlePullDone}
+            />
+          </Layout.Header>
+          <Content style={{ padding: "16px 20px 28px" }}>
+            <Tabs
+              defaultActiveKey="screener"
+              items={[
+                { key: "screener", label: "Value Screener", children: <ScreenerView /> },
+                { key: "weather", label: "Market Weathercast", children: <Weathercast /> },
+              ]}
+            />
+          </Content>
+        </Layout>
+      </ScreenerContext.Provider>
     </ConfigProvider>
   );
 }
