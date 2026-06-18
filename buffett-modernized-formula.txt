@@ -1,0 +1,505 @@
+════════════════════════════════════════════════════════════════
+  WARREN BUFFETT'S MODERNIZATION OF GRAHAM'S FORMULA
+  The Four Key Modifications + Five Modern Additions
+════════════════════════════════════════════════════════════════
+
+  "Price is what you pay. Value is what you get."
+  — Warren Buffett
+
+  Buffett studied under Graham at Columbia (1950) and credits
+  him as the most important influence on his investment
+  philosophy. But over 70+ years of investing, Buffett —
+  largely through the influence of Charlie Munger — evolved
+  well beyond Graham's purely mathematical, asset-focused
+  approach into something fundamentally different.
+
+  The shift: Graham minimized the COST OF BEING WRONG
+             by demanding a low price for anything.
+             Buffett maximizes the VALUE OF BEING RIGHT
+             by identifying businesses whose earnings power
+             is systematically underestimated by the market.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THE BUFFETT FORMULA (Two-Stage Owner Earnings DCF)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  As implemented in this application:
+
+  Stage 1 (High-Growth Period, 10 years):
+
+    If g ≠ r:
+      S1 = OE × [ 1 − ((1+g)/(1+r))^10 ] / (r − g)
+
+    If g = r (special case, L'Hôpital limit):
+      S1 = 10 × OE / (1 + r)
+
+  Stage 2 (Terminal / Perpetuity Value):
+
+    Terminal OE = OE × (1 + g)^10
+    S2 = Terminal OE × (1 + 2.5%) / [(r − 2.5%) × (1+r)^10]
+
+  Total Intrinsic Value:
+    V_buffett = S1 + S2
+
+  Where:
+    OE  = Owner Earnings per share (see Modification #1)
+    g   = High-growth-period EPS growth rate (as decimal)
+    r   = Discount rate (see Modification #2)
+    2.5% = Terminal perpetuity growth rate (GDP-like)
+
+  Discount rate r by moat quality:
+    Wide moat companies:     r = 8.5%
+    Moderate moat companies: r = 9.5%
+    Narrow moat companies:   r = 10.5%
+    No moat companies:       r = 11.5%
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODIFICATION #1 — OWNER EARNINGS REPLACE REPORTED EPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham used accounting EPS straight from the income statement.
+  Buffett uses Owner Earnings, which he defined in his 1986
+  shareholder letter as:
+
+    Owner Earnings = Net Income
+                   + Depreciation & Amortization
+                   − Maintenance Capital Expenditures
+                   − Working Capital Requirements
+
+  WHY THIS MATTERS:
+
+  Accounting rules require companies to "depreciate" physical
+  assets over their useful lives — spreading the original cost
+  across many years. This creates a non-cash expense called D&A
+  that reduces reported EPS but does NOT reduce actual cash.
+
+  For asset-light businesses (AAPL, GOOG, MCO, VRSN), D&A is
+  often FAR larger than the actual cash required to maintain
+  the business (maintenance capex). The difference flows
+  directly to owners as cash — but it's invisible in EPS.
+
+  EXAMPLES from Berkshire's portfolio:
+
+  Apple (AAPL):
+    — Reported EPS: $8.27
+    — D&A exceeds maintenance capex significantly
+    — Owner Earnings multiplier: 1.20×
+    — Owner Earnings estimate: $9.92/share
+    — Graham undervalues AAPL by ignoring this cash
+
+  VeriSign (VRSN):
+    — Virtually zero maintenance capex needed
+    — Revenue from .com/.net domain renewals is fully automatic
+    — Owner Earnings multiplier: 1.25×
+    — The most capital-efficient holding in the portfolio
+
+  Kraft Heinz (KHC):
+    — Ongoing restructuring charges inflate reported earnings
+    — Owner Earnings multiplier: 0.90× (adjusted DOWN)
+    — Real cash generation is LESS than reported EPS
+    — Graham's formula overstates KHC's value
+
+  Rule of thumb:
+    Asset-light businesses (tech, financial, brand):  OE > EPS
+    Capital-heavy businesses (energy, manufacturing): OE ≈ EPS
+    Businesses with restructuring charges:            OE < EPS
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODIFICATION #2 — THE MOAT PREMIUM REPLACES A FIXED RATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham used the same bond-yield adjustment for every company.
+  Buffett uses a VARIABLE discount rate that reflects the
+  certainty and durability of the competitive advantage (moat).
+
+  "The key to investing is determining the competitive
+  advantage of any given company and, above all, the durability
+  of that advantage." — Buffett, 1999 Fortune interview
+
+  MOAT TYPES AND THEIR DISCOUNT RATES:
+
+  Wide Moat (r = 8.5%)
+    Examples: AAPL, AXP, KO, GOOGL, MCO, VRSN, CB
+    Characteristics:
+    — Pricing power that does not erode under competition
+    — Customer switching costs are high
+    — Network effects or regulatory barriers to entry
+    — Brand premium that persists across economic cycles
+    — Buffett will hold these FOREVER at the right price
+
+  Moderate Moat (r = 9.5%)
+    Examples: BAC, DVA, KR, COF, STZ, NVR
+    Characteristics:
+    — Competitive advantage is real but faces some erosion risk
+    — Market position is strong but not impenetrable
+    — Some dependency on external factors (rates, demographics)
+
+  Narrow Moat (r = 10.5%)
+    Examples: CVX, OXY, DAL, KHC, LEN, NUE, ALLY
+    Characteristics:
+    — Advantage exists but could be disrupted within a decade
+    — Commodity-linked earnings, regulatory risk, or secular trends
+    — Requires more margin of safety to compensate
+
+  No Moat (r = 11.5%)
+    Examples: M (Macy's), LPX
+    Characteristics:
+    — Competing purely on price or cost
+    — No durable advantage; earnings are highly uncertain
+    — Graham-style asset value protection is the primary case
+
+  THE LOGIC: A wide-moat business's future earnings are more
+  CERTAIN. When you discount more certain cash flows, you use
+  a lower discount rate, which produces a higher present value.
+  This is mathematically identical to saying: "I'll pay more
+  for predictable earnings than unpredictable ones."
+
+  This is the single most important departure from Graham.
+  Graham treated all businesses as equally uncertain — Buffett
+  does not. He pays a premium for certainty.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODIFICATION #3 — TWO-STAGE DCF REPLACES THE STATIC MULTIPLIER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham's (8.5 + 2g) is a STATIC multiplier — it treats
+  all years of growth as identical. Buffett replaced this with
+  a proper discounted cash flow model that separates:
+
+  STAGE 1: A high-growth period of 10 years
+    — Uses the analyst consensus growth rate
+    — Each year's owner earnings are discounted back to today
+    — Captures the explicit value of near-term growth
+
+  STAGE 2: A terminal value after year 10
+    — Assumes the business grows at GDP pace forever (2.5%)
+    — This "perpetuity" value often makes up 50–70% of the
+      total intrinsic value calculation
+    — Highly sensitive to the discount rate chosen
+
+  WHY TWO STAGES MATTER:
+  A business growing at 20% for 10 years and then slowing to
+  2.5% forever is FUNDAMENTALLY different from a business
+  already growing at 2.5%. Graham's formula would produce
+  wildly different results depending on where in the growth
+  cycle a company happens to be measured.
+
+  The two-stage model handles this naturally, because it
+  explicitly models the high-growth window separately from
+  the long-term steady state.
+
+  SENSITIVITY NOTE:
+  The terminal value is extremely sensitive to the spread
+  between discount rate (r) and terminal growth rate (2.5%).
+  A 1% change in r can move intrinsic value by 30–50% for
+  wide-moat businesses. This is why Buffett rarely discusses
+  precise intrinsic value figures — the precision is false.
+
+  "I'd rather be vaguely right than precisely wrong."
+  — Buffett (attributing to Keynes)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODIFICATION #4 — SPECIAL MODELS FOR FINANCIAL COMPANIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham's formula was designed for industrial manufacturers.
+  It completely fails for banks, insurance companies, and other
+  financial businesses because their earnings are structured
+  differently.
+
+  A. BANKS AND CREDIT COMPANIES (BAC, AXP, COF, ALLY)
+
+    Graham approach: fails. Banks "borrow short and lend long."
+    Their balance sheet IS their business. Reported EPS is
+    highly sensitive to loan loss provisions and credit cycles.
+
+    Buffett's approach:
+    1. Value banks on MID-CYCLE Return on Equity (ROE)
+       — What does the bank earn in an AVERAGE credit environment?
+       — Ignore peak earnings (credit boom) and trough losses
+       — BAC mid-cycle ROE: ~11–13%
+       — American Express ROE: 30%+ (exceptional, wide-moat)
+
+    2. Price-to-Book as an anchor
+       — A bank earning 15% ROE on book should trade above book
+       — A bank earning 8% ROE should trade at or below book
+       — Justified P/B = (ROE − g) / (r − g)
+
+    3. Net Interest Margin sensitivity
+       — When interest rates rise, bank earnings often improve
+       — Buffett's BAC position benefits from elevated rates
+
+    WHY AXP IS DIFFERENT FROM A BANK:
+    American Express earns 30%+ ROE because it is a NETWORK
+    business, not a traditional bank. The AmEx brand commands
+    premium merchant fees AND premium cardholder fees. It is
+    a closed-loop network — it controls both sides of every
+    transaction. This is a moat, not just leverage.
+
+  B. INSURANCE COMPANIES (CB — Chubb)
+
+    Buffett's unique framework — the Float Model:
+
+    Insurance float = premiums collected but not yet paid out
+    as claims. This money sits with the insurer, earning
+    investment returns, at essentially zero cost IF the
+    insurer prices policies correctly.
+
+    KEY METRIC: Combined Ratio
+      = (Claims Paid + Operating Expenses) / Premiums Earned
+
+      Combined Ratio < 100: Insurer earns money AND gets
+                            free use of policyholder funds
+      Combined Ratio > 100: Insurer loses money underwriting
+                            but still has the float to invest
+
+    Chubb's combined ratio: approximately 87%
+    This means Chubb earns 13 cents of profit for every
+    dollar of premium BEFORE counting investment returns.
+    Its float is, in effect, "negative-cost capital" —
+    Chubb is paid to hold investable assets.
+
+    This is why Berkshire's insurance operations (GEICO,
+    General Re, Berkshire Hathaway Reinsurance) are the
+    financial engine of the entire conglomerate. Buffett
+    has called float the most important concept in his
+    business career.
+
+  C. NORMALIZED EARNINGS FOR CYCLICALS (CVX, OXY, NUE)
+
+    For commodity-linked businesses, reported EPS in any
+    given year is almost meaningless. In a commodity boom,
+    EPS is high. In a bust, it may be negative.
+
+    Buffett's approach:
+    — Use a mid-cycle commodity price (e.g., $70/barrel oil)
+    — Calculate what EPS would be at that normalized price
+    — Value the business on that normalized earnings power
+
+    This is why in this application:
+    — CVX uses normalized EPS of $11 (vs. actual ~$6 TTM)
+    — OXY EPS normalized for mid-cycle oil prices
+    — NUE (Nucor) EPS normalized for mid-cycle steel prices
+
+    Buffett's OXY investment is also informed by:
+    — Warrant purchases in the $50s = floor conviction price
+    — Carbon capture optionality (future value not in EPS)
+    — Chemical operations that reduce oil price sensitivity
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODERN ADDITION #1 — BUYBACK YIELD AMPLIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham had no mechanism for share buybacks. In the 1950s,
+  buybacks were relatively rare. Today they are the primary
+  way most large-cap US companies return capital.
+
+  When a company buys back shares, the SHARE COUNT falls.
+  The same total earnings now divide among fewer shares, so
+  EPS grows AUTOMATICALLY — with zero improvement in the
+  underlying business.
+
+  Apple (AAPL) example:
+    — Repurchases approximately 3–4% of shares outstanding per year
+    — $95+ billion in buybacks in fiscal 2023 alone
+    — Even if Apple's total profits don't grow, EPS grows 3–4%
+      from share count reduction alone
+    — This growth is MORE CERTAIN than organic business growth
+
+  Buffett explicitly factors this into his Apple thesis:
+  "Apple is an even better business than I originally thought
+  because of its ability to return capital at such scale."
+
+  In this application, Apple uses an Owner Earnings multiplier
+  of 1.20× AND a g (growth rate) of 10%, which partly reflects
+  buyback-driven EPS compounding above reported earnings growth.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODERN ADDITION #2 — THE WARRANT SIGNAL (OXY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham's formula produces a single point estimate for
+  intrinsic value. Buffett sometimes reveals his floor
+  conviction price through the STRUCTURE of his investment.
+
+  Berkshire's OXY warrants:
+    — Acquired the right to buy 84 million OXY shares at $59.62
+    — These warrants only have value if OXY stays above $59.62
+    — By holding these warrants, Buffett is publicly signaling
+      that he believes OXY has durable value well above $59.62
+
+  This is a form of revealed preference — his investment
+  structure discloses information his public statements do not.
+
+  Graham's formula suggests OXY is undervalued at $59.72.
+  The warrant signal reinforces this with a concrete floor.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODERN ADDITION #3 — RECURRING REVENUE PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham valued all earnings streams identically. Buffett
+  pays more for earnings that are structurally recurring and
+  non-discretionary.
+
+  DaVita (DVA): ~74% of US dialysis market
+    — Dialysis is non-discretionary: miss it, you die
+    — Revenue is primarily Medicare/Medicaid reimbursement
+    — Federal government backstops the revenue stream
+    — This certainty justifies a lower discount rate (9.5%)
+      than the business model alone would suggest
+
+  Coca-Cola (KO):
+    — Sells 2 billion servings per day across 200+ countries
+    — The beverage habit (morning Coke, afternoon Coke) is
+      as close to a recurring subscription as a consumer good
+      can be without being a subscription
+    — Cost basis of $3.25/share in 1988 now yields ~60%+
+      annually on original investment — a "perpetual bond"
+      with a growing coupon
+
+  The lower the discount rate applied to recurring revenue,
+  the more valuable it is vs. equivalent one-time revenue.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODERN ADDITION #4 — ASSET-LIGHT ROIC PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham focused on ASSET VALUE as a protection floor.
+  Buffett, via Munger, learned to prefer businesses with
+  HIGH RETURN ON INVESTED CAPITAL (ROIC) — especially those
+  that need little capital to generate high returns.
+
+  The ideal Buffett business:
+    — Grows earnings rapidly
+    — Requires little or no additional capital to grow
+    — Can return excess cash to shareholders via dividends
+      or buybacks each year
+
+  VeriSign (VRSN) is the extreme example in this portfolio:
+    — Government-granted monopoly on .com and .net registrations
+    — Price increases are pre-approved and automatic
+    — Zero meaningful capital expenditure required
+    — Owner Earnings multiplier: 1.25× (highest in portfolio)
+    — ROIC is effectively infinite (no capital base required)
+
+  NVR (homebuilder) takes an unusual approach:
+    — Never buys land outright — uses OPTIONS to purchase lots
+    — Only exercises the option when a house is pre-sold
+    — This means NVR carries almost no land inventory risk
+    — ROIC of 30%+ vs. peers at 10–15%
+    — Graham would see a small company. Buffett sees a
+      capital-efficient compounder.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MODERN ADDITION #5 — SUM-OF-PARTS FOR COMPLEX STRUCTURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Some holdings cannot be valued with a single earnings stream.
+  For these, Buffett uses an asset or sum-of-parts approach.
+
+  Liberty Live (LLIVE):
+    — Holds stakes in live entertainment venues, Ticketmaster
+      interest, Formula 1 rights, and other assets
+    — No single earnings stream captures the NAV
+    — Value = sum of individual asset values
+
+  Macy's (M):
+    — Classic Graham play: real estate value exceeds market cap
+    — Buffett (and activist investors) value the Macy's Herald
+      Square building and other owned properties
+    — Earnings from retail are secondary to asset liquidation value
+    — This IS Graham-style investing — the only pure example
+      in the current portfolio
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BUFFETT VERDICT THRESHOLDS (as used in this app)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The Buffett ratio = Price / Buffett Intrinsic Value
+  A moat bonus is added: Wide +5%, Moderate +2%, other +0%
+
+  Adjusted ratio    →  Verdict
+  ────────────────────────────────────────
+  ≥ 1.50            →  ★ Strong Buy
+  1.20 – 1.49       →  ▲ Buy
+  0.92 – 1.19       →  ◆ Hold
+  0.78 – 0.91       →  ▼ Trim
+  < 0.78            →  ✕ Pass
+
+  NOTE: Buffett rarely sells even at "Trim" or "Pass" for
+  wide-moat positions he has held for decades. The cost basis
+  matters significantly — selling triggers capital gains tax,
+  which is itself a hidden cost. His standard: "Our favorite
+  holding period is forever."
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THE FUNDAMENTAL PHILOSOPHICAL SHIFT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  GRAHAM: Buy cigar butts. One last puff left.
+    — Look for beaten-down companies trading below asset value
+    — Any business can be a buy at a low enough price
+    — Diversify widely because individual picks may fail
+    — Sell when the discount to intrinsic value closes
+
+  BUFFETT / MUNGER: Buy great businesses at fair prices.
+    — Identify businesses with durable competitive advantages
+    — Willingness to pay a fair or even slight premium for quality
+    — Concentrate in your best ideas
+    — Never sell if the business remains excellent
+    — Time is the friend of a wonderful business and the
+      enemy of a mediocre one
+
+  Buffett has said:
+  "It's far better to buy a wonderful company at a fair price
+  than a fair company at a wonderful price."
+
+  This is the complete inversion of Graham's approach — and
+  it is the single sentence that best explains how Buffett
+  became the greatest investor in history.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QUICK REFERENCE — WHICH METHOD TO USE WHEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Use GRAHAM primarily for:
+    Stable industrials, retailers, commodity producers,
+    moderately-growing consumer companies, asset plays
+
+  Use BUFFETT primarily for:
+    High-quality franchises, asset-light compounders,
+    financial services with high ROE, insurance float plays,
+    any business where durability of earnings is the key question
+
+  Use BOTH and compare:
+    If Graham says undervalued AND Buffett says Strong Buy →
+    Maximum conviction entry (rare combination)
+
+    If Graham says overvalued but Buffett says Buy →
+    The moat justifies the premium; Graham misses the quality
+
+    If both say overvalued →
+    Strong signal to wait for a better price
+
+
+════════════════════════════════════════════════════════════════
+  Source: Berkshire Hathaway Portfolio Dual Valuation App
+  Data: SEC 13F Q1 2026, Buffett shareholder letters 1977–2024
+  References: "Security Analysis" (Graham, 1934, 1962)
+              "The Intelligent Investor" (Graham, 1949)
+              Berkshire Hathaway Annual Letters (Buffett)
+  Not investment advice. For educational purposes only.
+════════════════════════════════════════════════════════════════

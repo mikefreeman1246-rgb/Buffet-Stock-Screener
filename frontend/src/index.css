@@ -1,0 +1,238 @@
+/* ── Options Screener — Dark Financial Theme ─────────────────────── */
+
+:root {
+  /* Base palette */
+  --bg-base: #0b0e14;
+  --bg-surface: #111520;
+  --bg-elevated: #161b28;
+  --bg-hover: #1c2235;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text-primary: #e8eaed;
+  --text-secondary: #8b919e;
+  --text-tertiary: #5c6370;
+  --text-inverse: #0b0e14;
+
+  /* Accent — teal/cyan for financial feel */
+  --accent: #2dd4bf;
+  --accent-dim: rgba(45, 212, 191, 0.12);
+  --accent-border: rgba(45, 212, 191, 0.3);
+  --accent-hover: #5eead4;
+
+  /* Semantic */
+  --positive: #34d399;
+  --positive-dim: rgba(52, 211, 153, 0.12);
+  --negative: #f87171;
+  --negative-dim: rgba(248, 113, 113, 0.12);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251, 191, 36, 0.12);
+  --info: #60a5fa;
+  --info-dim: rgba(96, 165, 250, 0.12);
+
+  /* Typography */
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-base);
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ── Ant Design Overrides ────────────────────────────────────────── */
+
+/* Tables — tighter, more data-dense */
+.ant-table {
+  font-family: var(--font-sans) !important;
+  font-size: 12.5px !important;
+}
+
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > td {
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--text-tertiary) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--bg-hover) !important;
+}
+
+.ant-table-expanded-row > td {
+  background: var(--bg-elevated) !important;
+}
+
+/* Tags — refined */
+.ant-tag {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px !important;
+  border-radius: 3px !important;
+}
+
+/* Cards — filter panels */
+.screener-filters .ant-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+/* Sliders */
+.ant-slider-rail {
+  background: var(--border-default) !important;
+}
+
+.ant-slider-track {
+  background: var(--accent) !important;
+}
+
+.ant-slider-handle::after {
+  box-shadow: 0 0 0 2px var(--accent) !important;
+}
+
+/* Tabs */
+.ant-tabs-tab {
+  font-family: var(--font-sans) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.2px !important;
+}
+
+/* Progress bar */
+.pipeline-progress .ant-progress-bg {
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover)) !important;
+}
+
+/* Descriptions in expanded rows */
+.ant-descriptions-item-label {
+  font-size: 11px !important;
+  color: var(--text-tertiary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+  font-weight: 500 !important;
+}
+
+.ant-descriptions-item-content {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+
+/* Pagination */
+.ant-pagination-total-text {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  color: var(--text-tertiary) !important;
+}
+
+/* Select dropdowns */
+.ant-select-selector {
+  font-size: 12.5px !important;
+}
+
+/* Radio buttons in filters */
+.screener-filters .ant-radio-button-wrapper {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Monospaced data cells */
+.data-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+}
+
+/* Ticker badge */
+.ticker-symbol {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+/* Positive / Negative coloring */
+.value-positive {
+  color: var(--positive);
+}
+.value-negative {
+  color: var(--negative);
+}
+
+/* ── Scrollbar (Webkit) ──────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ── Row selection accent ────────────────────────────────────────── */
+
+.row-selected td {
+  border-left: 2px solid #2dd4bf !important;
+}
+.row-selected td:not(:first-child) {
+  border-left-color: transparent !important;
+}

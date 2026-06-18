@@ -1,0 +1,208 @@
+════════════════════════════════════════════════════════════════
+  BENJAMIN GRAHAM'S INTRINSIC VALUE FORMULA
+  A Complete Reference Guide
+════════════════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THE FORMULA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  V = EPS × (8.5 + 2g) × (4.4 / Y)
+
+  As used in this application (May 2026):
+
+  V = EPS × (8.5 + 2g) × (4.4 / 5.56)
+  V = EPS × (8.5 + 2g) × 0.7914
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  VARIABLES DEFINED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  V   = Intrinsic Value per share (what the stock is worth)
+
+  EPS = Trailing Twelve-Month (TTM) diluted earnings per share.
+        For cyclical businesses (energy, steel, housing) Graham
+        recommended using a normalized, mid-cycle EPS rather
+        than the most recent figure, to avoid over- or under-
+        weighting a single year's result.
+
+  8.5 = The base Price-to-Earnings (P/E) ratio Graham assigned
+        to a company with ZERO expected earnings growth.
+        A no-growth business deserves a low multiple — 8.5x.
+
+  g   = Expected annual EPS growth rate over the next 7–10 years,
+        expressed as a whole-number percentage.
+        Example: if analysts expect 12% annual growth, g = 12.
+        Graham capped g at a maximum of around 20 in practice,
+        as extremely high growth rates are inherently unreliable
+        over a decade-long horizon.
+
+  4.4 = The yield on AAA-rated corporate bonds at the time Graham
+        published the formula (early 1960s). This was his proxy
+        for the "risk-free" return an investor could expect from
+        the highest-quality fixed income at that time.
+
+  Y   = The CURRENT yield on AAA-rated corporate bonds.
+        As of May 2026: Y = 5.56% (Moody's AAA index, FRED).
+        The ratio 4.4/Y adjusts the formula for today's interest
+        rate environment. When rates are high, 4.4/Y < 1, which
+        compresses intrinsic values. When rates are low, 4.4/Y > 1,
+        which expands them. This reflects the core financial truth
+        that rising rates reduce the present value of future earnings.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THE MULTIPLIER EXPLAINED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The term (8.5 + 2g) is Graham's P/E multiplier.
+
+  At g = 0  →  multiplier = 8.5    (no-growth business)
+  At g = 5  →  multiplier = 18.5
+  At g = 10 →  multiplier = 28.5
+  At g = 15 →  multiplier = 38.5
+  At g = 20 →  multiplier = 48.5   (Graham's practical ceiling)
+
+  The "+2g" component means every additional percentage point of
+  expected annual growth adds 2 points to the fair P/E. This is
+  a linear approximation of what the market typically pays for
+  growth — not a precise mathematical derivation.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  WORKED EXAMPLE — COCA-COLA (KO)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  EPS = $2.95
+  g   = 6% (expected annual growth)
+  Y   = 5.56%
+
+  Step 1: Calculate the multiplier
+          8.5 + (2 × 6) = 8.5 + 12 = 20.5
+
+  Step 2: Apply the bond yield adjustment
+          4.4 / 5.56 = 0.7914
+
+  Step 3: Calculate intrinsic value
+          V = 2.95 × 20.5 × 0.7914
+          V = 2.95 × 16.22
+          V ≈ $47.85
+
+  Current price: $81.35
+  Premium to Graham Value: +70%
+  Verdict: Overvalued by Graham's metric
+
+  Sweet Spot (33% margin of safety): ≤ $35.89
+  This means Graham would want to buy KO below ~$35.89
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  THE MARGIN OF SAFETY — GRAHAM'S GOLDEN RULE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Graham never bought at intrinsic value. He demanded a DISCOUNT
+  to protect against errors in his own estimates.
+
+  His standard: buy only when price ≤ 66–75% of intrinsic value.
+  This 25–33% discount is the "margin of safety."
+
+  In this application, Sweet Spot = Graham Value × 0.75
+  (a 25% discount / 33% margin of safety)
+
+  Graham's reasoning:
+    — EPS estimates can be wrong
+    — Growth rates are inherently uncertain
+    — Bond yields can change
+    — Companies face unexpected adversity
+
+  The margin of safety is the investor's buffer against all of
+  these uncertainties. "The three most important words in
+  investing are margin of safety." — Benjamin Graham
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  GRAHAM'S VERDICT THRESHOLDS (as used in this app)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Price vs. Graham Value   →  Verdict
+  ─────────────────────────────────────
+  Price < 85% of Graham V  →  Undervalued   (potential buy)
+  85%–110% of Graham V     →  Fair Value    (fairly priced)
+  110%–135% of Graham V    →  Mild Overval. (caution)
+  Price > 135% of Graham V →  Overvalued    (avoid / sell)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  WHAT THE FORMULA DOES WELL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ Simple, fast, and requires minimal inputs
+  ✓ Built-in interest rate sensitivity (the Y adjustment)
+  ✓ Excellent for stable, industrial-era businesses
+  ✓ Forces discipline: a high price is a high price
+  ✓ Embeds the margin of safety concept mathematically
+  ✓ Works well for: banks, retailers, energy, industrials,
+    consumer staples with moderate growth
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  KNOWN LIMITATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✗ Fails for negative or near-zero EPS (result is negative)
+  ✗ Assumes a LINEAR relationship between growth and value
+    — reality is exponential and depends on reinvestment rates
+  ✗ No concept of competitive moat or earnings durability
+  ✗ Undervalues asset-light companies where D&A exceeds capex
+    (reported EPS understates true cash generation)
+  ✗ Growth rate "g" is the analyst's estimate — highly uncertain
+  ✗ Often labels high-quality franchises as "overvalued" when
+    the market is correctly pricing in a durable advantage
+  ✗ Not designed for financial companies (banks, insurers) whose
+    earnings are structured fundamentally differently
+  ✗ Does not account for share buybacks, which amplify
+    per-share earnings growth beyond the reported EPS growth rate
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HISTORICAL CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Benjamin Graham (1894–1976) published this formula in the
+  1962 edition of "Security Analysis" and refined it in later
+  editions of "The Intelligent Investor."
+
+  Graham's investing philosophy was shaped by the Great Depression.
+  He sought mathematical proof that an investment was safe —
+  particularly that assets or earnings justified the price even
+  in a worst-case scenario. His formulas were designed to find
+  a "liquidation floor" beneath which the stock was almost
+  certainly cheap regardless of future prospects.
+
+  His most famous students: Warren Buffett (Columbia, 1950),
+  Irving Kahn, Walter Schloss, and Charlie Munger (indirectly).
+
+  Buffett called Graham "the second most influential person in
+  my life after my father."
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QUICK REFERENCE — CURRENT PARAMETERS (May 2026)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  AAA Bond Yield (Y):     5.56%  (Moody's AAA, FRED)
+  Bond Adjustment Factor: 4.4 / 5.56 = 0.7914
+  Base No-Growth P/E:     8.5×
+  Growth P/E Adder:       +2 per percent of growth
+  Sweet Spot Discount:    25% below Graham Value (75% of V)
+
+  Formula Summary:
+  V = EPS × (8.5 + 2g) × 0.7914
+
+
+════════════════════════════════════════════════════════════════
+  Source: Berkshire Hathaway Portfolio Dual Valuation App
+  Data: SEC 13F Q1 2026, FRED, Moody's AAA Index
+  Not investment advice. For educational purposes only.
+════════════════════════════════════════════════════════════════
