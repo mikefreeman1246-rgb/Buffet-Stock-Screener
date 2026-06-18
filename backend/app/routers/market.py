@@ -79,6 +79,9 @@ class SettingsIn(BaseModel):
 @router.put("/settings")
 def update_settings(body: SettingsIn, db: Session = Depends(get_db)):
     row = db.get(MarketSettings, 1)
+    if row is None:
+        row = MarketSettings(id=1)
+        db.add(row)
     row.payload = json.dumps(body.model_dump())
     row.updated_at = datetime.utcnow()
     db.commit()
@@ -86,16 +89,20 @@ def update_settings(body: SettingsIn, db: Session = Depends(get_db)):
     snap = _latest(db)
     if snap and snap.payload:
         payload = json.loads(snap.payload)
-        payload["score"] = weather.score(payload["indicators"], body.model_dump())
-        payload["thresholds"] = body.thresholds
-        snap.payload = json.dumps(payload)
-        db.commit()
+        if isinstance(payload, dict) and "indicators" in payload:
+            payload["score"] = weather.score(payload["indicators"], body.model_dump())
+            payload["thresholds"] = body.thresholds
+            snap.payload = json.dumps(payload)
+            db.commit()
     return body.model_dump()
 
 
 @router.post("/settings/reset")
 def reset_settings(db: Session = Depends(get_db)):
     row = db.get(MarketSettings, 1)
+    if row is None:
+        row = MarketSettings(id=1)
+        db.add(row)
     row.payload = json.dumps(DEFAULT_WEATHER_SETTINGS)
     row.updated_at = datetime.utcnow()
     db.commit()
