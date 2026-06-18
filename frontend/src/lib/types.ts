@@ -99,6 +99,45 @@ export interface PipelineStatus {
   } | null;
 }
 
+// --- Market Weathercast ----------------------------------------------------
+export interface Indicator {
+  metric: number | null;
+  value: number | null;
+  series: number[];
+  trend: string;
+}
+export interface ThresholdCfg {
+  label: string;
+  weight: number;
+  green_max: number;
+  yellow_max: number;
+  unit: string;
+}
+export interface WeatherScore {
+  level: number;
+  weather: string;
+  icon: string;
+  base: number;
+  states: Record<string, number | null>;
+  fired_rules: string[];
+  missing: string[];
+  read: string;
+}
+export interface DashboardPayload {
+  pulled_at: string;
+  indicators: Record<string, Indicator>;
+  score: WeatherScore;
+  thresholds: Record<string, ThresholdCfg>;
+}
+export interface DashboardResponse {
+  stale: boolean;
+  payload: DashboardPayload | null;
+}
+export interface WeatherSettings {
+  thresholds: Record<string, ThresholdCfg>;
+  rules: Record<string, boolean>;
+}
+
 export interface ScreenerFilterState {
   model: "graham" | "buffett" | "dual";
   graham_verdict: string[];
