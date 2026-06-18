@@ -35,17 +35,34 @@ def bps_change(series: list[float], lookback: int) -> float | None:
     return (series[-1] - series[-1 - lookback]) * 100.0  # yield pts -> bps
 
 
+def net_liquidity_series(walcl: list[float], tga: list[float], rrp: list[float]) -> list[float]:
+    """Net liquidity = Fed assets - TGA - RRP, in millions, oldest..newest.
+
+    WALCL (Fed total assets) and WTREGEN (TGA) are both weekly H.4.1 series in
+    millions and arrive date-aligned, so we subtract them element-wise on their
+    common tail. RRP (RRPONTSYD) is a *daily* series in *billions*, so it can't
+    be zipped by index; we convert its latest level to millions and subtract it
+    as a (currently tiny) constant offset. It cancels out of any trend change.
+    """
+    n = min(len(walcl), len(tga))
+    if n < 1:
+        return []
+    rrp_m = rrp[-1] * 1000.0 if rrp else 0.0  # billions -> millions, latest level
+    return [walcl[-(n - i)] - tga[-(n - i)] - rrp_m for i in range(n)]
+
+
 def net_liquidity_metric(walcl: list[float], tga: list[float], rrp: list[float]) -> float | None:
-    """Net liquidity = Fed assets - TGA - RRP. Return a stress metric where a
-    FALLING 4-week trend scores higher (tighter = more stress)."""
-    n = min(len(walcl), len(tga), len(rrp))
-    if n < 2:
+    """Stress metric = the % DRAIN in net liquidity over ~4 weeks (higher = more
+    stress). Falling liquidity -> positive; rising/flat -> <=0."""
+    nl = net_liquidity_series(walcl, tga, rrp)
+    if len(nl) < 2:
         return None
-    nl = [walcl[-i] - tga[-i] - rrp[-i] for i in range(1, n + 1)][::-1]
-    look = min(20, len(nl) - 1)
-    change = nl[-1] - nl[-1 - look]
-    # map: big drop -> ~3, flat -> ~1, rising -> <1 (clamped later by thresholds)
-    return 2.0 - (change / (abs(nl[-1]) or 1.0)) * 10.0
+    look = min(4, len(nl) - 1)  # weekly series -> ~4 weeks
+    base = nl[-1 - look]
+    if base == 0:
+        return None
+    pct = (nl[-1] - base) / base * 100.0
+    return -pct  # drain (falling) -> positive stress
 
 
 # --- assembly --------------------------------------------------------------
@@ -76,9 +93,13 @@ async def assemble_indicators() -> dict:
     ind["treasuries"] = card(move, last(fred["dgs10"]), fred["dgs10"],
                              (f"{move:+.0f} bps / wk" if move is not None else "n/a"))
     ind["nfci"] = card(last(fred["nfci"]), last(fred["nfci"]), fred["nfci"], _spark_trend(fred["nfci"]))
+    nl_series = net_liquidity_series(fred["walcl"], fred["tga"], fred["rrp"])
+    nl_metric = net_liquidity_metric(fred["walcl"], fred["tga"], fred["rrp"])
     ind["net_liquidity"] = card(
-        net_liquidity_metric(fred["walcl"], fred["tga"], fred["rrp"]),
-        None, fred["walcl"], "4-wk trend")
+        nl_metric,
+        round(nl_series[-1] / 1e6, 2) if nl_series else None,  # display level in $T
+        [round(v / 1e6, 3) for v in nl_series],                # sparkline in $T
+        (f"{-nl_metric:+.1f}% / 4wk" if nl_metric is not None else "n/a"))
     ind["financial_stress"] = card(last(ofr), last(ofr), ofr, _spark_trend(ofr))
 
     # Custom crash-risk

@@ -14,10 +14,29 @@ def test_bps_change_week():
 
 
 def test_net_liquidity_metric_inverts_direction():
-    # Net liquidity FALLING should yield a HIGHER stress metric.
-    falling = m.net_liquidity_metric(walcl=[8.0, 7.0], tga=[0.5, 0.5], rrp=[0.5, 0.5])
-    rising = m.net_liquidity_metric(walcl=[7.0, 8.0], tga=[0.5, 0.5], rrp=[0.5, 0.5])
+    # Realistic magnitudes: WALCL/WTREGEN in millions (~$6.7T / $0.8T), RRP in
+    # billions (~$7B). Net liquidity FALLING -> HIGHER (positive) stress metric.
+    falling = m.net_liquidity_metric(
+        walcl=[6_700_000, 6_600_000], tga=[800_000, 800_000], rrp=[7.0, 7.0])
+    rising = m.net_liquidity_metric(
+        walcl=[6_600_000, 6_700_000], tga=[800_000, 800_000], rrp=[7.0, 7.0])
+    assert falling > 0 > rising
     assert falling > rising
+
+
+def test_net_liquidity_metric_is_percent_drain():
+    # A net-liquidity drain over the window reads as a positive % stress (here
+    # ~$136B off ~$6.0T net ≈ +2.3%), confirming the metric is in a % domain.
+    walcl = [6_800_000] * 5 + [6_664_000]
+    metric = m.net_liquidity_metric(walcl=walcl, tga=[800_000] * 6, rrp=[7.0])
+    assert 2.0 < metric < 2.5
+
+
+def test_net_liquidity_flat_is_green():
+    # Flat liquidity -> metric near zero (well inside the green band, < 1.5).
+    metric = m.net_liquidity_metric(
+        walcl=[6_700_000] * 6, tga=[800_000] * 6, rrp=[7.0])
+    assert abs(metric) < 0.01
 
 
 def test_last_safe():
