@@ -69,3 +69,51 @@ DEFAULT_ASSUMPTIONS = Assumptions()
 
 # Server
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+
+
+# ---------------------------------------------------------------------------
+# Market Weathercast
+# ---------------------------------------------------------------------------
+# All free, no-API-key sources. FRED public CSV + Yahoo (yfinance) + OFR CSV.
+FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"
+MARKET_FRED_SERIES = {
+    "credit": "BAMLH0A0HYM2",   # ICE BofA US High Yield OAS (%)
+    "dgs10": "DGS10",           # 10Y Treasury yield (%)
+    "t10y2y": "T10Y2Y",         # 2s10s curve (%)
+    "nfci": "NFCI",             # Chicago Fed financial conditions (weekly)
+    "walcl": "WALCL",           # Fed total assets ($MM, weekly)
+    "tga": "WTREGEN",           # Treasury General Account ($BN, weekly)
+    "rrp": "RRPONTSYD",         # Overnight reverse repo ($BN, daily)
+}
+MARKET_YF_SYMBOLS = {
+    "vix": "^VIX", "vvix": "^VVIX", "skew": "^SKEW", "vix9d": "^VIX9D",
+    "gold": "GLD", "wti": "CL=F", "brent": "BZ=F", "spx": "^GSPC", "tlt": "TLT",
+}
+OFR_FSI_CSV = "https://www.financialresearch.gov/financial-stress-index/data/fsi.csv"
+
+MARKET_STALE_SECONDS = 30 * 60  # auto-refresh when snapshot older than 30 min
+
+# Each indicator's metric is normalized so HIGHER = MORE STRESS.
+# green: metric <= green_max ; yellow: <= yellow_max ; red: above yellow_max.
+DEFAULT_WEATHER_SETTINGS = {
+    "thresholds": {
+        # key:            label                weight green_max yellow_max  unit
+        "credit":   {"label": "HY Credit Spreads", "weight": 7, "green_max": 4.0,  "yellow_max": 6.0,  "unit": "%"},
+        "cascade":  {"label": "Cascade Risk",       "weight": 6, "green_max": 1.0,  "yellow_max": 2.0,  "unit": ""},
+        "treasuries":{"label":"10Y Move (bps/wk)",  "weight": 6, "green_max": 15.0, "yellow_max": 30.0, "unit": "bps"},
+        "net_liquidity":{"label":"Net Liquidity",   "weight": 5, "green_max": 1.0,  "yellow_max": 2.0,  "unit": ""},
+        "financial_stress":{"label":"OFR Fin. Stress","weight":5,"green_max": 0.0,  "yellow_max": 1.0,  "unit": ""},
+        "skew":     {"label": "SKEW",               "weight": 5, "green_max": 130.0,"yellow_max": 145.0,"unit": ""},
+        "nfci":     {"label": "NFCI",               "weight": 4, "green_max": -0.2, "yellow_max": 0.0,  "unit": ""},
+        "vvix":     {"label": "VVIX",               "weight": 4, "green_max": 90.0, "yellow_max": 110.0,"unit": ""},
+        "air_pocket":{"label":"Air Pocket Risk",    "weight": 4, "green_max": 1.0,  "yellow_max": 2.0,  "unit": ""},
+        "vix":      {"label": "VIX",                "weight": 3, "green_max": 20.0, "yellow_max": 30.0, "unit": ""},
+        "gold":     {"label": "Gold (% / mo)",      "weight": 2, "green_max": 5.0,  "yellow_max": 10.0, "unit": "%"},
+        "oil":      {"label": "Oil (WTI)",          "weight": 1, "green_max": 90.0, "yellow_max": 110.0,"unit": "$"},
+    },
+    "rules": {
+        "hidden_hedging": True,    # SKEW red + VVIX>=yellow while VIX green -> +1
+        "credit_liquidity": True,  # credit red + net liquidity tight -> +1
+        "cascade_floor": True,     # stocks+bonds+gold all down -> floor at 4
+    },
+}
