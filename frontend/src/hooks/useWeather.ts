@@ -20,8 +20,10 @@ export function useWeather() {
     setLoading(true);
     try {
       const res = await api.marketDashboard();
-      if (res.payload && !res.stale) setPayload(res.payload);
-      else await refresh(); // empty or stale -> auto-pull on tab open
+      // Accept a cached snapshot only if it's fresh AND well-formed; otherwise
+      // (empty, stale, or a malformed/legacy payload) auto-pull on tab open.
+      if (res.payload && !res.stale && res.payload.score) setPayload(res.payload);
+      else await refresh();
     } finally {
       setLoading(false);
     }

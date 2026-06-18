@@ -7,9 +7,8 @@
  * indicator that degraded to "n/a" upstream).
  */
 import { useState } from "react";
-import { Row, Col, Spin } from "antd";
+import { Row, Col, Spin, Button } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
-import { Button } from "antd";
 import { useWeather } from "../../hooks/useWeather";
 import WeatherHero from "./WeatherHero";
 import IndicatorCard from "./IndicatorCard";
@@ -83,7 +82,6 @@ export default function Weathercast() {
         {order.map((k) => (
           <Col xs={24} sm={12} md={8} lg={6} xxl={4} key={k}>
             <IndicatorCard
-              k={k}
               ind={payload.indicators[k]}
               cfg={payload.thresholds[k]}
               state={payload.score.states[k]}

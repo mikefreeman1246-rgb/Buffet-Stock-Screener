@@ -26,7 +26,6 @@ export default function IndicatorCard({
   cfg,
   state,
 }: {
-  k: string;
   ind: Indicator;
   cfg: ThresholdCfg;
   state: number | null;
