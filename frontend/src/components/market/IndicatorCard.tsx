@@ -31,6 +31,11 @@ export default function IndicatorCard({
   state: number | null;
 }) {
   const pill = state ? PILL[state] : NA;
+  // Threshold bands only make sense when the plotted series is in the same
+  // domain as the thresholds — i.e. the metric IS the latest level (vix, skew,
+  // credit…). Derived-metric indicators (bps/wk, %/mo, stress score) have
+  // metric !== value, so we plot the raw series with bands suppressed.
+  const sameDomain = ind.value != null && ind.metric === ind.value;
 
   return (
     <Card
@@ -72,6 +77,8 @@ export default function IndicatorCard({
           series={ind.series}
           greenMax={cfg.green_max}
           yellowMax={cfg.yellow_max}
+          state={state}
+          showBands={sameDomain}
           width={120}
           height={38}
         />
