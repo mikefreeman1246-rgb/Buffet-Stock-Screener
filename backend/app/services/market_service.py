@@ -113,6 +113,12 @@ def _air_pocket(yf: dict) -> dict:
 
 def _cascade(yf: dict, fred: dict) -> dict:
     """Contagion: stocks+bonds+gold down together, worse on credit/VVIX stress."""
+    if not yf.get("spx") and not yf.get("tlt") and not yf.get("gold"):
+        # Full feed outage: no data to judge, so exclude from the score like
+        # every other indicator (metric=None) rather than fabricating green.
+        return {"metric": None, "value": None, "series": [], "trend": "n/a",
+                "stocks_down": False, "bonds_down": False, "gold_down": False}
+
     def falling(series, look=5):
         return bool(series) and len(series) > look and series[-1] < series[-1 - look]
 

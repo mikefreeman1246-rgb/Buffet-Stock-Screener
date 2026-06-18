@@ -23,3 +23,13 @@ def test_net_liquidity_metric_inverts_direction():
 def test_last_safe():
     assert m.last([]) is None
     assert m.last([1.0, 2.0]) == 2.0
+
+
+def test_cascade_excluded_when_feeds_unavailable():
+    # Full feed outage: cascade has no data to judge, so it must exclude
+    # itself from the score (metric is None) rather than fabricating green.
+    card = m._cascade({}, {})
+    assert card["metric"] is None
+    assert card["stocks_down"] is False
+    assert card["bonds_down"] is False
+    assert card["gold_down"] is False
