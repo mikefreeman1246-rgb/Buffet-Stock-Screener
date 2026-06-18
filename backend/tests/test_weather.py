@@ -81,8 +81,8 @@ def test_all_yellow_is_cloudy():
 
 
 def test_credit_liquidity_fires_on_red_credit_and_tight_liquidity():
-    # credit yellow_max=6.0 -> 8.0 is RED; net_liquidity yellow_max=2.0,
-    # green_max=1.0 -> 1.5 is YELLOW (>= yellow triggers the divergence rule)
-    metrics = {"credit": 8.0, "net_liquidity": 1.5}
+    # credit yellow_max=6.0 -> 8.0 is RED; net_liquidity green_max=1.5,
+    # yellow_max=4.0 -> 2.5 is YELLOW (>= yellow triggers the divergence rule)
+    metrics = {"credit": 8.0, "net_liquidity": 2.5}
     out = weather.score(s(metrics), DEFAULT_WEATHER_SETTINGS)
     assert "credit_liquidity" in out["fired_rules"]
