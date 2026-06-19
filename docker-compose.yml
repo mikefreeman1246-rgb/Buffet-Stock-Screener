@@ -2,16 +2,16 @@ services:
   backend:
     build: ./backend
     ports:
-      - "9000:9000"
+      - "9010:9000"
     volumes:
       - ./data:/data
     environment:
       - PYTHONUNBUFFERED=1
-      - CORS_ORIGINS=http://localhost:3002
+      - CORS_ORIGINS=http://localhost:3010
 
   frontend:
     build: ./frontend
     ports:
-      - "3002:80"
+      - "3010:80"
     depends_on:
       - backend

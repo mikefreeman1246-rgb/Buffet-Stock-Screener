@@ -14,6 +14,11 @@ from app.database import get_db
 from app.models import MarketSnapshot, MarketSettings
 from app.services import weather
 from app.services.market_service import assemble_indicators
+from app.services.indicator_metadata import (
+    get_indicator_info,
+    get_all_indicator_info,
+    analyze_market_health,
+)
 
 router = APIRouter(prefix="/api/market", tags=["market"])
 
@@ -107,3 +112,46 @@ def reset_settings(db: Session = Depends(get_db)):
     row.updated_at = datetime.utcnow()
     db.commit()
     return DEFAULT_WEATHER_SETTINGS
+
+
+@router.get("/indicators")
+def get_indicators():
+    """Get metadata for all market indicators (descriptions, interpretations, etc.)."""
+    return get_all_indicator_info()
+
+
+@router.get("/indicators/{key}")
+def get_indicator(key: str):
+    """Get detailed metadata for a specific indicator."""
+    info = get_indicator_info(key)
+    if info is None:
+        return {"error": f"Indicator '{key}' not found"}
+    return info
+
+
+@router.get("/health-analysis")
+def get_health_analysis(db: Session = Depends(get_db)):
+    """
+    Synthesize current market indicators to provide health assessment and direction predictions.
+    Returns market health (Bullish/Neutral/Bearish) with short/long-term outlook.
+    """
+    snap = _latest(db)
+    if snap is None or not snap.payload:
+        return {
+            "error": "No market snapshot available",
+            "payload": None,
+        }
+
+    payload = json.loads(snap.payload)
+    indicators = payload.get("indicators", {})
+    score = payload.get("score", {})
+    states = score.get("states", {})
+    level = score.get("level", 3)
+
+    analysis = analyze_market_health(indicators, states, level)
+    return {
+        "pulled_at": payload.get("pulled_at"),
+        "analysis": analysis,
+        "score_level": level,
+        "score_weather": score.get("weather"),
+    }

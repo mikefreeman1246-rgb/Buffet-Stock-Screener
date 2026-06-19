@@ -10,9 +10,12 @@ import { useState } from "react";
 import { Row, Col, Spin, Button } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import { useWeather } from "../../hooks/useWeather";
+import { useMarketAnalysis } from "../../hooks/useMarketAnalysis";
 import WeatherHero from "./WeatherHero";
 import IndicatorCard from "./IndicatorCard";
 import WeatherSettingsDrawer from "./WeatherSettingsDrawer";
+import IndicatorDetailsDrawer from "./IndicatorDetailsDrawer";
+import MarketHealthSummary from "./MarketHealthSummary";
 
 function Legend() {
   const items: [string, string][] = [
@@ -35,7 +38,10 @@ function Legend() {
 
 export default function Weathercast() {
   const { payload, loading, refresh } = useWeather();
+  const { analysis, getIndicatorMetadata, refreshAnalysis } = useMarketAnalysis();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
 
   if (!payload) {
     return (
@@ -53,14 +59,42 @@ export default function Weathercast() {
     .map(([k]) => k)
     .filter((k) => payload.indicators[k]);
 
+  // Get selected indicator details for the drawer
+  const selectedIndKey = selectedIndicator;
+  const selectedInd = selectedIndKey ? payload.indicators[selectedIndKey] : null;
+  const selectedCfg = selectedIndKey ? payload.thresholds[selectedIndKey] : null;
+  const selectedState = selectedIndKey ? payload.score.states[selectedIndKey] : null;
+  const selectedMetadata = selectedIndKey ? getIndicatorMetadata(selectedIndKey) : null;
+
+  const handleIndicatorClick = (key: string) => {
+    setSelectedIndicator(key);
+    setDetailsOpen(true);
+  };
+
+  const handleDetailsClose = () => {
+    setDetailsOpen(false);
+    setSelectedIndicator(null);
+  };
+
+  const handleSettingsSaved = () => {
+    refresh();
+    refreshAnalysis();
+  };
+
   return (
     <div>
       <WeatherHero
         score={payload.score}
         pulledAt={payload.pulled_at}
         loading={loading}
-        onRefresh={refresh}
+        onRefresh={() => {
+          refresh();
+          refreshAnalysis();
+        }}
       />
+
+      {/* Market Health Summary */}
+      <MarketHealthSummary analysis={analysis} loading={false} />
 
       <div
         style={{
@@ -85,6 +119,7 @@ export default function Weathercast() {
               ind={payload.indicators[k]}
               cfg={payload.thresholds[k]}
               state={payload.score.states[k]}
+              onClick={() => handleIndicatorClick(k)}
             />
           </Col>
         ))}
@@ -93,7 +128,16 @@ export default function Weathercast() {
       <WeatherSettingsDrawer
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        onSaved={refresh}
+        onSaved={handleSettingsSaved}
+      />
+
+      <IndicatorDetailsDrawer
+        open={detailsOpen}
+        onClose={handleDetailsClose}
+        ind={selectedInd}
+        cfg={selectedCfg}
+        state={selectedState}
+        metadata={selectedMetadata}
       />
     </div>
   );

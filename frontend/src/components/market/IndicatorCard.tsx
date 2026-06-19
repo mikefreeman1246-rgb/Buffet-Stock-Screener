@@ -25,10 +25,12 @@ export default function IndicatorCard({
   ind,
   cfg,
   state,
+  onClick,
 }: {
   ind: Indicator;
   cfg: ThresholdCfg;
   state: number | null;
+  onClick?: () => void;
 }) {
   const pill = state ? PILL[state] : NA;
   // Threshold bands only make sense when the plotted series is in the same
@@ -41,7 +43,23 @@ export default function IndicatorCard({
     <Card
       size="small"
       styles={{ body: { padding: "10px 12px" } }}
-      style={{ borderLeft: `3px solid ${pill.accent}`, height: "100%" }}
+      style={{
+        borderLeft: `3px solid ${pill.accent}`,
+        height: "100%",
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+      }}
+      onMouseEnter={(e) => {
+        const elem = e.currentTarget;
+        elem.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+        elem.style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={(e) => {
+        const elem = e.currentTarget;
+        elem.style.boxShadow = "";
+        elem.style.transform = "";
+      }}
+      onClick={onClick}
       title={
         <Tooltip title={`weight ${cfg.weight} · green ≤ ${cfg.green_max} · yellow ≤ ${cfg.yellow_max}`}>
           <span style={{ fontSize: 12.5 }}>{cfg.label}</span>
