@@ -188,6 +188,67 @@ export default function IndicatorDetailsDrawer({
 
       <Divider />
 
+      {/* Component Signals (cascade risk and similar composite indicators) */}
+      {metadata.components && Array.isArray(metadata.components) && (
+        <>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "#e8eaed", marginBottom: 8 }}>
+              Component Signals
+            </div>
+            <Space direction="vertical" style={{ width: "100%" }} size="small">
+              {metadata.components.map((c: { name: string; signal: string; role: string }, i: number) => (
+                <div
+                  key={i}
+                  style={{
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderRadius: 6,
+                    padding: "8px 12px",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 3 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#c7ccd6" }}>{c.name}</span>
+                    <span style={{ fontSize: 11, color: "#fbbf24", marginLeft: 8, whiteSpace: "nowrap" }}>{c.signal}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#5c6370", lineHeight: 1.5 }}>{c.role}</div>
+                </div>
+              ))}
+            </Space>
+
+            {/* Scoring legend for composite indicators */}
+            {metadata.scoring && (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 11, color: "#8b919e", marginBottom: 6, fontWeight: 500 }}>Score Thresholds</div>
+                {Object.entries(metadata.scoring).map(([key, desc]) => {
+                  const color = key.startsWith("1") ? "#34d399" : key.startsWith("2") ? "#fbbf24" : "#f87171";
+                  const icon = key.startsWith("1") ? "🟢" : key.startsWith("2") ? "🟡" : "🔴";
+                  return (
+                    <div key={key} style={{ fontSize: 11, color: "#8b919e", marginBottom: 4 }}>
+                      <span style={{ color }}>{icon} </span>
+                      <span style={{ color }}>{String(desc)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Historical examples */}
+            {metadata.historical_examples && (
+              <div style={{ marginTop: 12 }}>
+                <div style={{ fontSize: 11, color: "#8b919e", marginBottom: 6, fontWeight: 500 }}>Historical Examples</div>
+                {Object.entries(metadata.historical_examples).map(([key, desc]) => (
+                  <div key={key} style={{ fontSize: 11, color: "#5c6370", marginBottom: 4 }}>
+                    <span style={{ color: "#8b919e" }}>{key.replace(/_/g, " ")}:</span>{" "}
+                    {String(desc)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <Divider />
+        </>
+      )}
+
       {/* Market Implications */}
       {metadata.implications && (
         <div>
