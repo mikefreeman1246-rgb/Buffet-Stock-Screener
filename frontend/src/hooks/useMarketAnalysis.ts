@@ -17,7 +17,10 @@ interface IndicatorMetadata {
   typical_ranges?: Record<string, string>;
 }
 
-interface MarketAnalysis {
+export interface MarketAnalysis {
+  regime: string;
+  regime_detail: string;
+  conviction: string;
   health: string;
   short_term: {
     direction: string;
@@ -35,8 +38,10 @@ interface MarketAnalysis {
     chaos_count: number;
     total_count: number;
   };
+  positioning: string[];
   top_risks: string[];
   opportunities: string[];
+  watch_levels: string[];
 }
 
 export function useMarketAnalysis() {

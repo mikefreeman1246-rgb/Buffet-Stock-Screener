@@ -148,7 +148,7 @@ def get_health_analysis(db: Session = Depends(get_db)):
     states = score.get("states", {})
     level = score.get("level", 3)
 
-    analysis = analyze_market_health(indicators, states, level)
+    analysis = analyze_market_health(indicators, states, level, score=score)
     return {
         "pulled_at": payload.get("pulled_at"),
         "analysis": analysis,

@@ -363,88 +363,281 @@ def get_all_indicator_info() -> dict:
     return INDICATOR_METADATA
 
 
-def analyze_market_health(indicators: dict, states: dict, score_level: str) -> dict:
+def _v(indicators: dict, key: str, field: str = "value") -> float | None:
+    """Safely extract a numeric field from an indicator dict."""
+    val = indicators.get(key, {}).get(field)
+    try:
+        return float(val) if val is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def analyze_market_health(indicators: dict, states: dict, score_level: int, score: dict | None = None) -> dict:
     """
-    Synthesize market health from individual indicator states.
+    Synthesize market health using actual indicator values for data-driven, specific analysis.
 
     Args:
-        indicators: dict of indicator keys to Indicator objects with value/trend
+        indicators: dict of indicator keys with value/metric/trend fields
         states: dict of indicator keys to state values (1=GREEN, 2=YELLOW, 3=RED)
-        score_level: overall score level string ("bullish", "neutral", "bearish")
+        score_level: numeric weather level 1-5 (Sunny→Hurricane)
+        score: full score dict (provides fired_rules, weather name)
 
     Returns:
-        dict with health, short_term outlook, long_term outlook, signal breakdown, risks, opportunities
+        Rich dict with regime, conviction, short/long term outlook, positioning,
+        data-driven risks, opportunities, and watch levels.
     """
+    # --- Extract actual values ---
+    vix = _v(indicators, "vix")
+    skew = _v(indicators, "skew")
+    credit = _v(indicators, "credit")
+    vvix = _v(indicators, "vvix")
+    nfci = _v(indicators, "nfci")
+    ofr = _v(indicators, "financial_stress")
+    oil = _v(indicators, "oil")
+    cascade_metric = _v(indicators, "cascade", "metric")
+    air_metric = _v(indicators, "air_pocket", "metric")
+    net_liq = _v(indicators, "net_liquidity")
+    treas_metric = _v(indicators, "treasuries", "metric")
+
+    fired_rules = (score or {}).get("fired_rules", [])
+    weather_name = (score or {}).get("weather", "")
+
+    # --- Signal counts ---
     healthy_count = sum(1 for s in states.values() if s == 1)
     watch_count = sum(1 for s in states.values() if s == 2)
     chaos_count = sum(1 for s in states.values() if s == 3)
-    total_count = len(states)
+    total_count = len(states) or 1
 
-    health_map = {"bullish": "Bullish", "neutral": "Neutral", "bearish": "Bearish"}
-    health = health_map.get(score_level, "Unknown")
+    # --- Key pattern detection ---
+    skew_vix_div = states.get("skew") == 3 and states.get("vix") == 1
+    credit_stress = states.get("credit") in [2, 3]
+    cascade_crisis = cascade_metric is not None and cascade_metric >= 3
+    cascade_watch = cascade_metric is not None and cascade_metric >= 2
 
-    if chaos_count > 3:
-        short_term_dir = "Bearish"
-        short_term_reasoning = "Multiple indicators in chaos; expect downside risk."
-        short_term_horizon = "1–4 weeks"
-    elif watch_count > 4:
-        short_term_dir = "Cautious"
-        short_term_reasoning = "Mixed signals with elevated caution; downside bias."
-        short_term_horizon = "1–4 weeks"
-    elif healthy_count >= total_count - 2:
-        short_term_dir = "Bullish"
-        short_term_reasoning = "Most indicators healthy; positive momentum expected."
-        short_term_horizon = "1–4 weeks"
+    # --- Regime ---
+    if score_level >= 5 or cascade_crisis:
+        regime = "Crisis — liquidity crunch"
+        regime_detail = "All asset classes failing simultaneously — no safe havens remain"
+        health = "Bearish"
+    elif score_level >= 4:
+        regime = "Risk-off — broad stress"
+        regime_detail = "Multiple systemic gauges in alarm; defensive positioning warranted"
+        health = "Bearish"
+    elif "hidden_hedging" in fired_rules or skew_vix_div:
+        regime = "Risk-on (complacent)"
+        regime_detail = "Low VIX despite elevated tail-risk hedging — hidden fragility signal from smart money"
+        health = "Bullish"
+    elif score_level >= 3:
+        regime = "Cautious — stress building"
+        regime_detail = "Mixed signals; pockets of stress warrant selective risk reduction"
+        health = "Neutral"
+    elif score_level == 1:
+        regime = "Risk-on — all clear"
+        regime_detail = "All indicators aligned; favorable conditions across the board"
+        health = "Bullish"
     else:
-        short_term_dir = "Neutral"
-        short_term_reasoning = "Balanced signals; direction unclear."
-        short_term_horizon = "1–4 weeks"
+        regime = "Risk-on — mostly healthy"
+        regime_detail = "Broad health confirmed with isolated areas of caution"
+        health = "Bullish"
 
-    if chaos_count > 2 and watch_count > 3:
-        long_term_dir = "Bearish"
-        long_term_reasoning = "Accumulating stress indicators suggest longer-term headwinds."
-        long_term_horizon = "3–12 months"
-    elif healthy_count < 4:
-        long_term_dir = "Cautious"
-        long_term_reasoning = "Fragility building; risk of deterioration over months."
-        long_term_horizon = "3–12 months"
-    elif healthy_count >= total_count - 2:
-        long_term_dir = "Bullish"
-        long_term_reasoning = "Strong fundamentals suggest sustained upside bias."
-        long_term_horizon = "3–12 months"
+    # --- Conviction ---
+    if healthy_count >= 10 and chaos_count <= 1 and not skew_vix_div:
+        conviction = "High"
+    elif healthy_count >= 8 or chaos_count >= 4:
+        conviction = "Medium"
     else:
-        long_term_dir = "Neutral"
-        long_term_reasoning = "Mixed signals; no clear multi-month trend."
-        long_term_horizon = "3–12 months"
+        conviction = "Low"
+    if skew_vix_div and conviction == "High":
+        conviction = "Medium"
 
-    top_risks = []
-    for key, state in states.items():
-        if state in [2, 3]:
-            meta = get_indicator_info(key)
-            if meta:
-                label = meta.get("label", key)
-                top_risks.append(f"{label} {'in chaos state' if state == 3 else 'elevated risk'}")
+    # --- Short-term reasoning (data-driven) ---
+    st_parts = []
+    if vix is not None:
+        if vix < 16:
+            st_parts.append(f"VIX at {vix:.1f} — low fear, risk-on regime firmly intact")
+        elif vix < 20:
+            st_parts.append(f"VIX at {vix:.1f} — below the 20 caution threshold, conditions orderly")
+        elif vix < 30:
+            st_parts.append(f"VIX at {vix:.1f} — elevated; expect wider intraday swings")
+        else:
+            st_parts.append(f"VIX at {vix:.1f} — panic-level fear; forced selling likely")
+
+    if healthy_count >= 9:
+        st_parts.append(f"{healthy_count}/{total_count} indicators confirming positive momentum")
+    elif chaos_count >= 3:
+        st_parts.append(f"{chaos_count} indicators in stress — turbulence likely near-term")
+
+    if skew_vix_div and skew is not None:
+        st_parts.append(
+            f"SKEW at {skew:.0f} signals smart-money tail hedging despite calm VIX — "
+            "sudden volatility spike possible with little warning"
+        )
+
+    if not st_parts:
+        st_parts.append("Mixed signals — maintain balanced positioning")
+
+    if chaos_count >= 3 or score_level >= 4:
+        st_dir = "Bearish"
+    elif healthy_count >= 9:
+        st_dir = "Bullish"
+    elif watch_count + chaos_count >= 5:
+        st_dir = "Cautious"
+    else:
+        st_dir = "Neutral"
+
+    # --- Long-term reasoning (slow macro indicators) ---
+    lt_parts = []
+    if nfci is not None:
+        if nfci < -0.3:
+            lt_parts.append(f"NFCI at {nfci:.2f} — loose financial conditions historically support 12–18% annual equity returns")
+        elif nfci < 0:
+            lt_parts.append(f"NFCI at {nfci:.2f} — near-neutral conditions; watch for tightening trend")
+        else:
+            lt_parts.append(f"NFCI at {nfci:.2f} — tighter-than-normal conditions historically precede GDP slowdowns")
+
+    if credit is not None:
+        if credit < 3.5:
+            lt_parts.append(f"credit spreads at {credit:.2f}% signal healthy corporate funding and expanding credit cycle")
+        elif credit < 5:
+            lt_parts.append(f"credit spreads at {credit:.2f}% elevated — funding costs rising, watch for deterioration")
+        else:
+            lt_parts.append(f"credit spreads at {credit:.2f}% — acute stress; recession risk rising")
+
+    if not lt_parts:
+        lt_parts.append("Macro indicators provide mixed long-term guidance; monitor monthly")
+
+    if score_level >= 4 or (credit is not None and credit > 5):
+        lt_dir = "Bearish"
+    elif nfci is not None and nfci < -0.2 and healthy_count >= 8:
+        lt_dir = "Bullish"
+    elif nfci is not None and nfci > 0.2:
+        lt_dir = "Cautious"
+    else:
+        lt_dir = "Neutral"
+
+    # --- Positioning ---
+    positioning: list[str] = []
+    if "all clear" in regime or "mostly healthy" in regime:
+        positioning.append("Favor quality growth and momentum — risk appetite supports premium multiples")
+        positioning.append("Cyclicals and financials outperform in this regime; underweight defensives")
+        if skew_vix_div and skew is not None:
+            positioning.append(f"Allocate a small tail hedge — SKEW at {skew:.0f} warrants downside protection")
+    elif "complacent" in regime:
+        positioning.append("Maintain growth exposure but size positions conservatively")
+        positioning.append("Favor quality names with strong balance sheets over speculative momentum")
+        if skew is not None:
+            positioning.append(f"SKEW at {skew:.0f} — buy downside protection; a sudden vol spike is underpriced")
+    elif "Cautious" in regime or score_level == 3:
+        positioning.append("Reduce cyclical and speculative exposure; rotate toward quality")
+        positioning.append("Screen for strong balance sheets, high FCF, and low leverage")
+        positioning.append("Volatility hedges (VIX calls, put spreads) offer favorable risk/reward")
+    elif "Risk-off" in regime or "Crisis" in regime:
+        positioning.append("Defensive posture — favor cash, short-duration Treasuries, and defensives")
+        positioning.append("Screen for low-debt, high free-cash-flow companies with pricing power")
+        positioning.append("Avoid high-multiple growth, leveraged, or illiquid names until conditions stabilize")
+    else:
+        positioning.append("Maintain balanced allocation between growth and value")
+        positioning.append("Screen for quality at a reasonable price (QARP) — earnings visibility preferred")
+
+    # --- Key risks (data-driven, specific) ---
+    top_risks: list[str] = []
+    if skew is not None and states.get("skew") == 3:
+        vix_str = f" vs VIX at {vix:.1f}" if vix is not None else ""
+        top_risks.append(
+            f"SKEW {skew:.0f} (red){vix_str} — smart money aggressively buying tail hedges; "
+            "divergence historically precedes sudden volatility spikes"
+        )
+    if air_metric is not None and states.get("air_pocket") == 3:
+        top_risks.append(
+            f"Air pocket elevated (score {air_metric:.0f}/3) — VIX term structure inverted; "
+            "near-term options pricing more fear than 30-day average; gap risk present"
+        )
+    if cascade_watch:
+        top_risks.append(
+            f"Cascade score {cascade_metric:.0f}/3 — multiple asset classes declining together; "
+            "contagion risk building"
+        )
+    if credit is not None and states.get("credit") in [2, 3]:
+        top_risks.append(
+            f"Credit spreads at {credit:.2f}% elevated — widening signals deteriorating risk appetite "
+            "and rising corporate funding costs"
+        )
+    if vvix is not None and states.get("vvix") in [2, 3]:
+        top_risks.append(f"VVIX at {vvix:.0f} — volatility regime becoming unstable; VIX moves may be erratic")
+    if ofr is not None and states.get("financial_stress") in [2, 3]:
+        top_risks.append(f"OFR stress index at {ofr:.2f} — systemic stress above historical norm across multiple subsectors")
+
     top_risks = top_risks[:3]
+    if not top_risks:
+        top_risks = [f"No significant stress signals — {healthy_count}/{total_count} indicators healthy and conditions broadly supportive"]
 
-    opportunities = []
-    if healthy_count > 6:
-        opportunities.append("Broad-based indicator health supports constructive positioning")
-    if "vix" in indicators and states.get("vix") == 1:
-        opportunities.append("Low volatility provides entry opportunity window")
-    if "credit" in indicators and states.get("credit") == 1:
-        opportunities.append("Tight credit spreads indicate strong credit demand")
+    # --- Opportunities (data-driven) ---
+    opportunities: list[str] = []
+    if credit is not None and states.get("credit") == 1:
+        opportunities.append(
+            f"Credit spreads at {credit:.2f}% — well below 4% watch threshold; "
+            "corporate funding healthy and supportive of equity risk premium"
+        )
+    if nfci is not None and nfci < -0.3:
+        opportunities.append(
+            f"NFCI at {nfci:.2f} — historically loose conditions support sustained equity outperformance"
+        )
+    if vix is not None and states.get("vix") == 1 and vix < 17:
+        opportunities.append(
+            f"VIX at {vix:.1f} — low-vol regime; favorable for stock-picking and options selling strategies"
+        )
+    if states.get("net_liquidity") == 1:
+        opportunities.append("Net liquidity positive — Fed balance sheet supporting asset prices and valuations")
+    if healthy_count >= 10:
+        opportunities.append(
+            f"{healthy_count}/{total_count} indicators aligned bullish — broad-based confirmation supports constructive positioning"
+        )
+    if ofr is not None and states.get("financial_stress") == 1 and ofr < -0.3:
+        opportunities.append(
+            f"OFR stress index at {ofr:.2f} — below-average systemic stress; credit and funding markets functioning normally"
+        )
+
+    opportunities = opportunities[:3]
+    if not opportunities:
+        opportunities = ["Selective opportunities in quality names; prioritize strong fundamentals and earnings visibility"]
+
+    # --- Watch levels ---
+    watch_levels: list[str] = []
+    if vix is not None and vix < 25:
+        watch_levels.append(
+            f"VIX at {vix:.1f} — watch for break above 20 (shift to caution) or 30 (defensive posture)"
+        )
+    if skew is not None:
+        watch_levels.append(
+            f"SKEW at {skew:.0f} — watch for drop below 130 (tail risk normalizing) "
+            "or spike above 160 (pre-crash warning signal)"
+        )
+    if credit is not None and credit < 5:
+        watch_levels.append(
+            f"Credit spreads at {credit:.2f}% — watch for move above 4% (watch zone) or 6% (chaos signal)"
+        )
+    if cascade_metric is not None:
+        watch_levels.append(
+            f"Cascade at {cascade_metric:.0f}/3 — alert if score reaches 2 "
+            "(two of three asset classes falling simultaneously)"
+        )
+
+    watch_levels = watch_levels[:3]
 
     return {
+        "regime": regime,
+        "regime_detail": regime_detail,
+        "conviction": conviction,
         "health": health,
         "short_term": {
-            "direction": short_term_dir,
-            "reasoning": short_term_reasoning,
-            "horizon": short_term_horizon,
+            "direction": st_dir,
+            "reasoning": ". ".join(st_parts[:2]),
+            "horizon": "1–4 weeks",
         },
         "long_term": {
-            "direction": long_term_dir,
-            "reasoning": long_term_reasoning,
-            "horizon": long_term_horizon,
+            "direction": lt_dir,
+            "reasoning": ". ".join(lt_parts[:2]),
+            "horizon": "3–12 months",
         },
         "signal_breakdown": {
             "healthy_count": healthy_count,
@@ -452,6 +645,8 @@ def analyze_market_health(indicators: dict, states: dict, score_level: str) -> d
             "chaos_count": chaos_count,
             "total_count": total_count,
         },
+        "positioning": positioning,
         "top_risks": top_risks,
         "opportunities": opportunities,
+        "watch_levels": watch_levels,
     }
